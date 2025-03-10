@@ -4,21 +4,21 @@ import { useState, useRef } from "react";
 import { useAuth } from "src/context/AuthContext";
 
 export function Login() {
-  const emailRef = useRef()
-  const passwordRef = useRef()
+  const emailRef = useRef();
+  const passwordRef = useRef();
 
-  const [error, setError] = useState(null)
-  const [message, setMessage] = useState("")
+  const [error, setError] = useState(null);
+  const [message, setMessage] = useState("");
 
-  const {signUp} = useAuth()
-  let navigate = useNavigate()
+  const { signIn } = useAuth();
+  let navigate = useNavigate();
 
   async function handleSubmit(e) {
     e.preventDefault();
 
     const email = emailRef.current.value;
     const password = passwordRef.current.value;
-    const { error } = await signUp({ email, password });
+    const { error } = await signIn({ email, password });
 
     if (error) {
       setError(error);
@@ -26,6 +26,7 @@ export function Login() {
       return;
     }
     navigate("/");
+    window.location.reload();
   }
   return (
     <div className="text-center div">
@@ -61,9 +62,7 @@ export function Login() {
         <button className="btn btn-lg btn-primary btn-block" type="submit">
           Sign in
         </button>
-        <Link to="/signup">
-          <a>Sign up</a>
-        </Link>
+        <Link to="/signup">Sign up</Link>
       </form>
       {message ? <p>{message}</p> : ""}
     </div>
