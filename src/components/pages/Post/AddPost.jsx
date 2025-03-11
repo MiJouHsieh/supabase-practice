@@ -11,6 +11,29 @@ export function AddPost() {
   const [content, setContent] = useState("");
   let navigate = useNavigate();
 
+  async function uploadImage(event) {
+    try {
+      if (!event.target.files || event.target.files.length === 0) {
+        throw new Error("You must select an image to upload.");
+      }
+
+      const file = event.target.files[0];
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      let { data, error: uploadError } = await supabase.storage
+        .from("blogimage")
+        .upload(filePath, file);
+
+      if (uploadError) {
+        throw uploadError;
+      }
+    } catch (error) {
+      alert(error.message);
+    }
+  }
+
   async function addBlog({ title, description, content }) {
     try {
       const updates = {
@@ -82,7 +105,12 @@ export function AddPost() {
                 <div>
                   <div className="mb-3 pb-1">
                     <label className="form-label px-0">Post image</label>
-                    <input type="file" className="form-control" />
+                    <input
+                      type="file"
+                      className="form-control"
+                      accept="image/*"
+                      onChange={uploadImage}
+                    />
                   </div>
                 </div>
                 <button
