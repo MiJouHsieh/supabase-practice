@@ -9,10 +9,13 @@ export function AddPost() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [content, setContent] = useState("");
+  const [image, setImage] = useState(null);
+  const [uploading, setUploading] = useState(false);
   let navigate = useNavigate();
 
   async function uploadImage(event) {
     try {
+      setUploading(true);
       if (!event.target.files || event.target.files.length === 0) {
         throw new Error("You must select an image to upload.");
       }
@@ -29,18 +32,35 @@ export function AddPost() {
       if (uploadError) {
         throw uploadError;
       }
+      getURL(filePath);
     } catch (error) {
       alert(error.message);
     }
   }
+  async function getURL(url) {
+    try {
+      const { publicURL, error } = await supabase.storage
+        .from("blogimage")
+        .getPublicUrl(url);
+      if (error) {
+        throw error;
+      }
+      setImage(publicURL);
+    } catch (error) {
+      alert(error.message);
+    } finally {
+      setUploading(false);
+    }
+  }
 
-  async function addBlog({ title, description, content }) {
+  async function addBlog({ title, description, content, image }) {
     try {
       const updates = {
         id: uuidv4(),
         title: title,
         description: description,
         content: content,
+        image: image,
       };
       const { error } = await supabase.from("blog").insert([updates]);
       if (error) {
@@ -118,10 +138,11 @@ export function AddPost() {
                   type="button"
                   onClick={async (e) => {
                     e.preventDefault();
-                    await addBlog({ title, description, content });
+                    await addBlog({ title, description, content, image });
                   }}
+                  disabled={uploading}
                 >
-                  Add
+                  {uploading ? "uploading..." : "Add"}
                 </button>
               </form>
             </div>
