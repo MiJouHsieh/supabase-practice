@@ -19,12 +19,11 @@ export function AddPost() {
         description: description,
         content: content,
       };
-      let { error } = await supabase
-        .from("blog")
-        .insert(updates)
-        .then(navigate("/"));
+      const { error } = await supabase.from("blog").insert([updates]);
       if (error) {
         throw error;
+      } else {
+        navigate("/");
       }
     } catch (error) {
       alert(error.message);
@@ -83,16 +82,16 @@ export function AddPost() {
                 <div>
                   <div className="mb-3 pb-1">
                     <label className="form-label px-0">Post image</label>
-                    <input
-                      type="file"
-                      className="form-control"
-                    />
+                    <input type="file" className="form-control" />
                   </div>
                 </div>
                 <button
                   className="btn btn-light shadow btn-sm mb-2"
-                  type="submit"
-                  onClick={() => addBlog({ title, description, content })}
+                  type="button"
+                  onClick={async (e) => {
+                    e.preventDefault();
+                    await addBlog({ title, description, content });
+                  }}
                 >
                   Add
                 </button>
