@@ -2,6 +2,7 @@ import { Nav } from "/src/components/layouts/Nav";
 import { Footer } from "/src/components/layouts/Footer";
 import { useState, useEffect } from "react";
 import { supabase } from "/src/supabaseClient";
+import {Link} from 'react-router-dom'
 
 export function Home() {
   const [data, setData] = useState();
@@ -53,10 +54,10 @@ export function Home() {
                     <div key={blog.id}>
                       {/* Post preview */}
                       <div className="post-preview">
-                        <a href="post.html">
+                        <Link to={`/singlepost/${blog.id}`}>
                           <h2 className="post-title">{blog.title}</h2>
                           <h3 className="post-subtitle">{blog.description}</h3>
-                        </a>
+                        </Link>
                       </div>
                       {/* Divider */}
                       <hr className="my-4" />
